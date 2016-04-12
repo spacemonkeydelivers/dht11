@@ -1,5 +1,7 @@
 `include "dht11.v"
 
+`timescale 100ns/100ns
+
 module dht11tb();
 
 	
@@ -7,7 +9,7 @@ module dht11tb();
 	always #1 clk = ~clk;
 
 	reg out = 0;
-	reg data_reg = 0;
+	reg data_reg = 1;
 	inout data;
 	assign data = (out == 0) ? 1'bZ : data_reg;
 
@@ -19,28 +21,26 @@ module dht11tb();
 	
 	initial
 	begin
-		#5;
-		out = 1;
-		#2;
+		#57; // wait for 5.7us
+		out = 1; // master controls the line
+		#15; // wait for 1.5us
 		data_reg = 0; // switch to req_lo
-		#17;
+		#185; // wait for 18.5us
 		data_reg = 1; // switch to initial
-		#4;
+		#40; // wait for 4us
 		data_reg = 0; // switch to req_lo
-		#4;
-		data_reg = 1; // switch to req_hi
-		#4;
+		#183; //wait for 18.3us
+		data_reg  = 1; // switch to req_hi
+		#390; // wait for 39us
 		data_reg = 0; // switch to req_low
-		#4;
+		#290; // wait for 29us
 		data_reg = 1; // switch to req_hi
-		#2;
-		out = 0; // switch to resp_lo
-		
+		out = 0; // release data line
 	end
 	
 	initial
 	begin
-		#5000;
+		#50000;
 		$finish;
 	end
 
